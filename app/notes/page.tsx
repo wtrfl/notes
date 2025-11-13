@@ -37,8 +37,6 @@ export default function Notes() {
         </div>
     )
 
-    console.log(notes);
-
     return (
         <div className="flex flex-col gap-4 min-h-screen justify-center items-center">
             <UserDropdown />
