@@ -6,17 +6,19 @@ import { useEffect, useState } from 'react';
 import UserDropdown from './UserDropdown';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 interface Doc { title: string, content: string, createdAt: Timestamp }
 interface Note extends Doc { id: string }
 
 export default function Notes() {
 
+    const { loading, user } = useAuth();
     const router = useRouter();
     const [notes, setNotes] = useState<null | Note[]>(null);
 
     const addNote = async () => {
-        const notesRef = collection(db, "notes") as CollectionReference<Doc>;
+        const notesRef = collection(db, "users", user!.uid, "notes") as CollectionReference<Doc>;
 
         await addDoc(notesRef, {
             title: "Note",
@@ -35,7 +37,7 @@ export default function Notes() {
                 return;
             }
 
-            unsubscribeNotes = onSnapshot(collection(db, "notes") as CollectionReference<Doc>, (snapshot) => {
+            unsubscribeNotes = onSnapshot(collection(db, "users", user?.uid, "notes") as CollectionReference<Doc>, (snapshot) => {
                 const notes: Note[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
                 setNotes(notes);
             })
@@ -47,7 +49,7 @@ export default function Notes() {
         }
     }, [router])
 
-    if (notes === null) return (
+    if (loading || notes === null) return (
         <div className="flex min-h-screen justify-center items-center">
             <div className="loader"></div>
         </div>
