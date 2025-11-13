@@ -3,6 +3,7 @@
 import { db } from '@/lib/firebase';
 import { addDoc, collection, getDocs, serverTimestamp, CollectionReference, Timestamp, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
+import UserDropdown from './UserDropdown';
 
 interface Doc { title: string, content: string, createdAt: Timestamp }
 interface Note extends Doc { id: string }
@@ -40,6 +41,7 @@ export default function Notes() {
 
     return (
         <div className="flex flex-col gap-4 min-h-screen justify-center items-center">
+            <UserDropdown />
             <div className="grid grid-cols-4 gap-2">
                 {notes.map(note => (
                     <div className="border flex flex-col gap-2 p-3" key={note.id}>

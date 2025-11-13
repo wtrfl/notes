@@ -64,10 +64,6 @@ export default function Auth() {
         }
     }
 
-    const handleLogout = async () => {
-        await signOut(auth);
-    }
-
     return (
         <div className="flex flex-col justify-center items-center min-h-screen">
             <h1 className="text-center">Your Account</h1>
