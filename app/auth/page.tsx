@@ -1,16 +1,32 @@
 'use client';
 
 import { useAuth } from "@/context/AuthContext";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { useState } from "react";
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 export default function Auth() {
     const { loading, user } = useAuth();
+    const router = useRouter();
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string>("");
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) router.replace("/notes");
+        })
+
+        return () => unsubscribe();
+    }, [])
+
+    if (loading) return (
+        <div className="flex justify-center items-center min-h-screen">
+            <div className="loader"></div>
+        </div>
+    )
 
     const handleSignup = async () => {
         setError("");
@@ -51,20 +67,6 @@ export default function Auth() {
     const handleLogout = async () => {
         await signOut(auth);
     }
-
-    if (loading) return (
-        <div className="flex justify-center items-center min-h-screen">
-            <div className="loader"></div>
-        </div>
-    )
-
-    if (user) return (
-        <div className="flex justify-center items-center min-h-screen">
-            Welcome, {user.email}
-            <br />
-            <button onClick={handleLogout}>Sign out</button>
-        </div>
-    )
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen">
