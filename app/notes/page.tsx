@@ -1,15 +1,18 @@
 'use client';
 
-import { db } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { addDoc, collection, getDocs, serverTimestamp, CollectionReference, Timestamp, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import UserDropdown from './UserDropdown';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 interface Doc { title: string, content: string, createdAt: Timestamp }
 interface Note extends Doc { id: string }
 
 export default function Notes() {
 
+    const router = useRouter();
     const [notes, setNotes] = useState<null | Note[]>(null);
 
     const addNote = async () => {
@@ -23,13 +26,26 @@ export default function Notes() {
     }
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, "notes") as CollectionReference<Doc>, (snapshot) => {
-            const notes: Note[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-            setNotes(notes);
+        let unsubscribeNotes: (() => void) | undefined;
+
+        const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                router.replace("/auth");
+                if (unsubscribeNotes) unsubscribeNotes();
+                return;
+            }
+
+            unsubscribeNotes = onSnapshot(collection(db, "notes") as CollectionReference<Doc>, (snapshot) => {
+                const notes: Note[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                setNotes(notes);
+            })
         })
 
-        return () => unsubscribe();
-    }, [])
+        return () => {
+            unsubscribeAuth();
+            if (unsubscribeNotes) unsubscribeNotes();
+        }
+    }, [router])
 
     if (notes === null) return (
         <div className="flex min-h-screen justify-center items-center">
