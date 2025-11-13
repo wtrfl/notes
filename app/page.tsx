@@ -1,7 +1,7 @@
 'use client';
 
 import { db } from '@/lib/firebase';
-import { addDoc, collection, getDocs, serverTimestamp, CollectionReference, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, getDocs, serverTimestamp, CollectionReference, Timestamp, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 interface Doc { title: string, content: string, createdAt: Timestamp }
@@ -22,16 +22,12 @@ export default function Home() {
     }
 
     useEffect(() => {
-        getDocs(collection(db, "notes") as CollectionReference<Doc>)
-            .then((data) => {
-                return data.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }))
-            })
-            .then((result) => {
-                setNotes(result);
-            })
+        const unsubscribe = onSnapshot(collection(db, "notes") as CollectionReference<Doc>, (snapshot) => {
+            const notes: Note[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+            setNotes(notes);
+        })
+
+        return () => unsubscribe();
     }, [])
 
     if (notes === null) return (
@@ -49,7 +45,7 @@ export default function Home() {
                     <div className="border flex flex-col gap-2 p-3" key={note.id}>
                         <strong>{note.title}</strong>
                         <span>{note.content}</span>
-                        <span className='text-xs opacity-50'>{note.createdAt.seconds}</span>
+                        <span className='text-xs opacity-50'>{note.createdAt ? note.createdAt.seconds : "pending..."}</span>
                     </div>
                 ))}
             </div>
