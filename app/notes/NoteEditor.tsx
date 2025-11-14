@@ -1,8 +1,11 @@
 import formattedNoteDate from "@/lib/formatNoteDate";
-import { Note } from "./page";
+import { Doc, Note } from "./page";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { doc, DocumentReference, serverTimestamp, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { User } from "firebase/auth";
 
-export default function NoteEditor({ note, modified, setModified }: { note: Note, modified: boolean, setModified: Dispatch<SetStateAction<boolean>> }) {
+export default function NoteEditor({ note, modified, setModified, user }: { note: Note, modified: boolean, setModified: Dispatch<SetStateAction<boolean>>, user: User }) {
 
     const [titleValue, setTitleValue] = useState<string>(note.title);
     const [contentValue, setContentValue] = useState<string>(note.content);
@@ -13,12 +16,29 @@ export default function NoteEditor({ note, modified, setModified }: { note: Note
         } else {
             setModified(true);
         }
-    }, [titleValue, contentValue])
+    }, [titleValue, contentValue, note])
+
+    useEffect(() => {
+        setTitleValue(note.title);
+        setContentValue(note.content);
+    }, [note])
 
     const handleRevert = () => {
         setTitleValue(note.title);
         setContentValue(note.content);
         setModified(false);
+    }
+
+    const handleUpdate = async () => {
+        const noteRef = doc(db, "users", user.uid, "notes", note.id) as DocumentReference<Doc>;
+        updateDoc(noteRef, {
+            title: titleValue,
+            content: contentValue,
+            createdAt: serverTimestamp()
+        })
+        .catch((error) => {
+            console.log(error);
+        })
     }
 
     return (
@@ -30,7 +50,7 @@ export default function NoteEditor({ note, modified, setModified }: { note: Note
                 <div className="flex items-center border-t">
                     <span className="flex-1 opacity-70 text-sm px-6">You have unsaved changes.</span>
                     <button onClick={handleRevert} className="px-6 py-4 border-l cursor-pointer bg-foreground/(--bg-opacity) hover:[--bg-opacity:5%]">Revert</button>
-                    <button className="px-6 py-4 border-l cursor-pointer bg-foreground/(--bg-opacity) hover:[--bg-opacity:5%]">Save Changes</button>
+                    <button onClick={handleUpdate} className="px-6 py-4 border-l cursor-pointer bg-foreground/(--bg-opacity) hover:[--bg-opacity:5%]">Save Changes</button>
                 </div>
             )}
         </div>

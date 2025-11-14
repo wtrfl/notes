@@ -12,7 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import formattedNoteDate from '@/lib/formatNoteDate';
 import NoteEditor from './NoteEditor';
 
-interface Doc { title: string, content: string, createdAt: Timestamp }
+export interface Doc { title: string, content: string, createdAt: Timestamp }
 export interface Note extends Doc { id: string }
 
 export default function Notes() {
@@ -49,7 +49,6 @@ export default function Notes() {
             unsubscribeNotes = onSnapshot(collection(db, "users", user?.uid, "notes") as CollectionReference<Doc>, (snapshot) => {
                 const notes: Note[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
                 setNotes(notes);
-                setCurrentNoteId(notes[0].id);
             })
         })
 
@@ -96,7 +95,7 @@ export default function Notes() {
                         </div>
                     ))}
                 </div>
-                {currentNote && <NoteEditor note={currentNote} modified={editorModified} setModified={setEditorModified} />}
+                {currentNote && <NoteEditor key={currentNote.id} note={currentNote} modified={editorModified} setModified={setEditorModified} user={user!} />}
             </div>
         </div>
     );
