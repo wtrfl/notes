@@ -71,7 +71,7 @@ export default function Notes() {
             </div>
             <div className="flex flex-1 items-stretch">
                 <div className="flex flex-col w-75 border-r h-full">
-                    <button className="border-b flex px-3 py-3 items-center gap-2" onClick={addNote}>
+                    <button className="border-b flex px-3 py-3 items-center gap-2 cursor-pointer bg-foreground/(--bg-opacity) hover:[--bg-opacity:5%]" onClick={addNote}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                         New Note
                     </button>
