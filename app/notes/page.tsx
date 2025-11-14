@@ -1,5 +1,7 @@
 'use client';
 
+// TODO: markdown support, apple notes desktop style layout, updating and deleting notes
+
 import { auth, db } from '@/lib/firebase';
 import { addDoc, collection, getDocs, serverTimestamp, CollectionReference, Timestamp, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -56,18 +58,37 @@ export default function Notes() {
     )
 
     return (
-        <div className="flex flex-col gap-4 min-h-screen justify-center items-center">
-            <UserDropdown />
-            <div className="grid grid-cols-4 gap-2">
-                {notes.map(note => (
-                    <div className="border flex flex-col gap-2 p-3" key={note.id}>
-                        <strong>{note.title}</strong>
-                        <span>{note.content}</span>
-                        <span className='text-xs opacity-50'>{note.createdAt ? note.createdAt.seconds : "pending..."}</span>
-                    </div>
-                ))}
+        <div className="relative flex flex-col max-w-[960px] mx-auto border h-screen">
+            
+            <div className="flex justify-between px-4 py-2 border-b">
+                <span>NOTES</span>
+                <UserDropdown />
             </div>
-            <button onClick={addNote}>NEW NOTE</button>
+            <div className="flex flex-1 items-stretch">
+                <div className="flex flex-col w-75 border-r h-full">
+                    <button className="border-b flex px-3 py-3 items-center gap-2" onClick={addNote}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        New Note
+                    </button>
+                    {notes.map(note => (
+                        <div className="border-b flex flex-col px-4 py-3" key={note.id}>
+                            <strong>{note.title}</strong>
+                            <span>
+                                {
+                                    note.createdAt
+                                    ? (
+                                        note.createdAt.toDate().getMonth()+1 + "/" +
+                                        note.createdAt.toDate().getDate() + "/" +
+                                        note.createdAt.toDate().getFullYear().toString().slice(-2)
+                                    )
+                                    : ""
+                                }
+                                <span className='opacity-75'> {note.content}</span>
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }
