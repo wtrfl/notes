@@ -15,6 +15,12 @@ export default function NoteEditor({ note, modified, setModified }: { note: Note
         }
     }, [titleValue, contentValue])
 
+    const handleRevert = () => {
+        setTitleValue(note.title);
+        setContentValue(note.content);
+        setModified(false);
+    }
+
     return (
         <div className="flex flex-col flex-1">
             <span className="text-sm opacity-60 self-center my-3 px-6">{formattedNoteDate(note.createdAt, "long")}</span>
@@ -23,7 +29,7 @@ export default function NoteEditor({ note, modified, setModified }: { note: Note
             {modified && (
                 <div className="flex items-center border-t">
                     <span className="flex-1 opacity-70 text-sm px-6">You have unsaved changes.</span>
-                    <button className="px-6 py-4 border-l cursor-pointer bg-foreground/(--bg-opacity) hover:[--bg-opacity:5%]">Revert</button>
+                    <button onClick={handleRevert} className="px-6 py-4 border-l cursor-pointer bg-foreground/(--bg-opacity) hover:[--bg-opacity:5%]">Revert</button>
                     <button className="px-6 py-4 border-l cursor-pointer bg-foreground/(--bg-opacity) hover:[--bg-opacity:5%]">Save Changes</button>
                 </div>
             )}
