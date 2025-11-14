@@ -88,6 +88,11 @@ export default function Notes() {
                         </div>
                     ))}
                 </div>
+                <div className="flex flex-col flex-1 px-6">
+                    <span className="text-sm opacity-60 self-center my-3">November 13, 2025 at 9:03PM</span>
+                    <input type="text" className='text-xl font-bold outline-0 mb-2' />
+                    <textarea className='flex-1 resize-none outline-0'></textarea>
+                </div>
             </div>
         </div>
     );
