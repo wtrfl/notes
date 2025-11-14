@@ -76,7 +76,7 @@ export default function Notes() {
                         New Note
                     </button>
                     {notes.map(note => (
-                        <div className="border-b flex flex-col px-4 py-3" key={note.id}>
+                        <div className={"border-b flex flex-col px-4 py-3 bg-foreground/(--bg-opacity) " + (note.id === currentNoteId ? "[--bg-opacity:10%]" : "[--bg-opacity:0%]")} key={note.id}>
                             <strong>{note.title}</strong>
                             <span>
                                 {formattedNoteDate(note.createdAt, "short")}
