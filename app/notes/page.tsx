@@ -59,9 +59,10 @@ export default function Notes() {
 
     return (
         <div className="relative flex flex-col max-w-[960px] mx-auto border h-screen">
-            <UserDropdown />
-            <div className="px-4 py-2 border-b">
+            
+            <div className="flex justify-between px-4 py-2 border-b">
                 <span>NOTES</span>
+                <UserDropdown />
             </div>
             <div className="flex flex-1 items-stretch">
                 <div className="flex flex-col w-75 border-r h-full">
