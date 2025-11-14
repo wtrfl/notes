@@ -10,9 +10,10 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import formattedNoteDate from '@/lib/formatNoteDate';
+import NoteEditor from './NoteEditor';
 
 interface Doc { title: string, content: string, createdAt: Timestamp }
-interface Note extends Doc { id: string }
+export interface Note extends Doc { id: string }
 
 export default function Notes() {
 
@@ -85,13 +86,7 @@ export default function Notes() {
                         </div>
                     ))}
                 </div>
-                {currentNote && (
-                    <div className="flex flex-col flex-1 px-6">
-                        <span className="text-sm opacity-60 self-center my-3">{formattedNoteDate(currentNote.createdAt, "long")}</span>
-                        <input type="text" className='text-xl font-bold outline-0 mb-2' value={currentNote.title} />
-                        <textarea className='flex-1 resize-none outline-0' value={currentNote.content}></textarea>
-                    </div>
-                )}
+                {currentNote && <NoteEditor note={currentNote} />}
             </div>
         </div>
     );
