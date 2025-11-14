@@ -19,6 +19,9 @@ export default function Notes() {
     const router = useRouter();
     const [notes, setNotes] = useState<null | Note[]>(null);
 
+    const [currentNoteId, setCurrentNoteId] = useState<null | string>(null);
+    const currentNote = notes ? notes.find(note => note.id === currentNoteId) : null;
+
     const addNote = async () => {
         const notesRef = collection(db, "users", user!.uid, "notes") as CollectionReference<Doc>;
 
@@ -42,6 +45,7 @@ export default function Notes() {
             unsubscribeNotes = onSnapshot(collection(db, "users", user?.uid, "notes") as CollectionReference<Doc>, (snapshot) => {
                 const notes: Note[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
                 setNotes(notes);
+                setCurrentNoteId(notes[0].id);
             })
         })
 
@@ -88,11 +92,13 @@ export default function Notes() {
                         </div>
                     ))}
                 </div>
-                <div className="flex flex-col flex-1 px-6">
-                    <span className="text-sm opacity-60 self-center my-3">November 13, 2025 at 9:03PM</span>
-                    <input type="text" className='text-xl font-bold outline-0 mb-2' />
-                    <textarea className='flex-1 resize-none outline-0'></textarea>
-                </div>
+                {currentNote && (
+                    <div className="flex flex-col flex-1 px-6">
+                        <span className="text-sm opacity-60 self-center my-3">November 13, 2025 at 9:03PM</span>
+                        <input type="text" className='text-xl font-bold outline-0 mb-2' value={currentNote.title} />
+                        <textarea className='flex-1 resize-none outline-0' value={currentNote.content}></textarea>
+                    </div>
+                )}
             </div>
         </div>
     );
