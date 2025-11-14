@@ -24,6 +24,8 @@ export default function Notes() {
     const [currentNoteId, setCurrentNoteId] = useState<null | string>(null);
     const currentNote = notes ? notes.find(note => note.id === currentNoteId) : null;
 
+    const [editorModified, setEditorModified] = useState<boolean>(false);
+
     const addNote = async () => {
         const notesRef = collection(db, "users", user!.uid, "notes") as CollectionReference<Doc>;
 
@@ -57,6 +59,14 @@ export default function Notes() {
         }
     }, [router])
 
+    const handleSelectNote = (id: string) => {
+        if (editorModified) {
+            alert("You have unsaved changes!");
+            return;
+        }
+        setCurrentNoteId(id);
+    } 
+
     if (loading || notes === null) return (
         <div className="flex min-h-screen justify-center items-center">
             <div className="loader"></div>
@@ -77,7 +87,7 @@ export default function Notes() {
                         New Note
                     </button>
                     {notes.map(note => (
-                        <div onClick={() => setCurrentNoteId(note.id)} className={"border-b flex flex-col px-4 py-3 cursor-pointer bg-foreground/(--bg-opacity) " + (note.id === currentNoteId ? "[--bg-opacity:10%]" : "[--bg-opacity:0%] hover:[--bg-opacity:5%]")} key={note.id}>
+                        <div onClick={() => handleSelectNote(note.id)} className={"border-b flex flex-col px-4 py-3 cursor-pointer bg-foreground/(--bg-opacity) " + (note.id === currentNoteId ? "[--bg-opacity:10%]" : "[--bg-opacity:0%] hover:[--bg-opacity:5%]")} key={note.id}>
                             <strong>{note.title}</strong>
                             <span>
                                 {formattedNoteDate(note.createdAt, "short")}
@@ -86,7 +96,7 @@ export default function Notes() {
                         </div>
                     ))}
                 </div>
-                {currentNote && <NoteEditor note={currentNote} />}
+                {currentNote && <NoteEditor note={currentNote} modified={editorModified} setModified={setEditorModified} />}
             </div>
         </div>
     );

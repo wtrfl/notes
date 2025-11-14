@@ -1,10 +1,8 @@
 import formattedNoteDate from "@/lib/formatNoteDate";
 import { Note } from "./page";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-export default function NoteEditor({ note }: { note: Note }) {
-
-    const [modified, setModified] = useState<boolean>(false);
+export default function NoteEditor({ note, modified, setModified }: { note: Note, modified: boolean, setModified: Dispatch<SetStateAction<boolean>> }) {
 
     const [titleValue, setTitleValue] = useState<string>(note.title);
     const [contentValue, setContentValue] = useState<string>(note.content);
