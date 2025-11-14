@@ -7,7 +7,7 @@ import { addDoc, collection, getDocs, serverTimestamp, CollectionReference, Time
 import { useEffect, useState } from 'react';
 import UserDropdown from './UserDropdown';
 import { onAuthStateChanged } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import formattedNoteDate from '@/lib/formatNoteDate';
 import NoteEditor from './NoteEditor';
@@ -18,7 +18,11 @@ export interface Note extends Doc { id: string }
 export default function Notes() {
 
     const { loading, user } = useAuth();
+
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
     const [notes, setNotes] = useState<null | Note[]>(null);
 
     const [currentNoteId, setCurrentNoteId] = useState<null | string>(null);
@@ -64,6 +68,7 @@ export default function Notes() {
             unsubscribeNotes = onSnapshot(collection(db, "users", user?.uid, "notes") as CollectionReference<Doc>, (snapshot) => {
                 const notes: Note[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
                 setNotes(notes);
+                if (searchParams.get("note") !== "" && searchParams.get("note") !== null) setCurrentNoteId(searchParams.get("note"));
             })
         })
 
@@ -79,6 +84,9 @@ export default function Notes() {
             return;
         }
         setCurrentNoteId(id);
+        const params = new URLSearchParams(searchParams);
+        params.set("note", id);
+        router.replace(`${pathname}?${params.toString()}`)
     } 
 
     if (loading || notes === null) return (
