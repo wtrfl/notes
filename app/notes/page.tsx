@@ -9,6 +9,7 @@ import UserDropdown from './UserDropdown';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import formattedNoteDate from '@/lib/formatNoteDate';
 
 interface Doc { title: string, content: string, createdAt: Timestamp }
 interface Note extends Doc { id: string }
@@ -78,15 +79,7 @@ export default function Notes() {
                         <div className="border-b flex flex-col px-4 py-3" key={note.id}>
                             <strong>{note.title}</strong>
                             <span>
-                                {
-                                    note.createdAt
-                                    ? (
-                                        note.createdAt.toDate().getMonth()+1 + "/" +
-                                        note.createdAt.toDate().getDate() + "/" +
-                                        note.createdAt.toDate().getFullYear().toString().slice(-2)
-                                    )
-                                    : ""
-                                }
+                                {formattedNoteDate(note.createdAt, "short")}
                                 <span className='opacity-75'> {note.content}</span>
                             </span>
                         </div>
@@ -94,7 +87,7 @@ export default function Notes() {
                 </div>
                 {currentNote && (
                     <div className="flex flex-col flex-1 px-6">
-                        <span className="text-sm opacity-60 self-center my-3">November 13, 2025 at 9:03PM</span>
+                        <span className="text-sm opacity-60 self-center my-3">{formattedNoteDate(currentNote.createdAt, "long")}</span>
                         <input type="text" className='text-xl font-bold outline-0 mb-2' value={currentNote.title} />
                         <textarea className='flex-1 resize-none outline-0' value={currentNote.content}></textarea>
                     </div>
