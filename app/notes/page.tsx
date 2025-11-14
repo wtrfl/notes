@@ -26,6 +26,21 @@ export default function Notes() {
 
     const [editorModified, setEditorModified] = useState<boolean>(false);
 
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (editorModified) {
+                e.preventDefault();
+                e.returnValue = "";
+            }
+        }
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        }
+    }, [editorModified])
+
     const addNote = async () => {
         const notesRef = collection(db, "users", user!.uid, "notes") as CollectionReference<Doc>;
 
