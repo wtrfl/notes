@@ -33,6 +33,20 @@ export default function Notes() {
     const [editorModified, setEditorModified] = useState<boolean>(false);
 
     useEffect(() => {
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setCurrentNoteId(null);
+            }
+        }
+
+        window.addEventListener("keydown", handleKey);
+
+        return () => {
+            window.removeEventListener("keydown", handleKey);
+        }
+    }, [])
+
+    useEffect(() => {
         currentNoteRef.current = currentNoteId;
         const params = new URLSearchParams(searchParams);
         if (currentNoteId) {
