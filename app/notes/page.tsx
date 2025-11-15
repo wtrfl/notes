@@ -62,8 +62,8 @@ export default function Notes() {
         const notesRef = collection(db, "users", user!.uid, "notes") as CollectionReference<Doc>;
 
         addDoc(notesRef, {
-            title: "Note",
-            content: "test",
+            title: "New Note",
+            content: "",
             createdAt: serverTimestamp()
         }).then((noteRef) => {
             setCurrentNoteId(noteRef.id);
@@ -125,7 +125,7 @@ export default function Notes() {
                     </button>
                     {notes.map(note => (
                         <div onClick={() => handleSelectNote(note.id)} className={"border-b flex flex-col px-4 py-3 cursor-pointer bg-foreground/(--bg-opacity) " + (note.id === currentNoteId ? "[--bg-opacity:10%]" : "[--bg-opacity:0%] hover:[--bg-opacity:5%]")} key={note.id}>
-                            <strong className='line-clamp-1 text-ellipsis'>{note.title}</strong>
+                            <strong className='line-clamp-1 text-ellipsis'>{note.title.trim() === "" ? "Untitled Note" : note.title}</strong>
                             <span className='line-clamp-1 text-ellipsis'>
                                 {formattedNoteDate(note.createdAt, "short")}
                                 <span className='opacity-75'> {note.content}</span>
