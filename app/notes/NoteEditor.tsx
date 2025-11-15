@@ -44,8 +44,8 @@ export default function NoteEditor({ note, modified, setModified, user }: { note
     return (
         <div className="flex flex-col flex-1">
             <span className="text-sm opacity-60 self-center my-3 px-6">{formattedNoteDate(note.createdAt, "long")}</span>
-            <input type="text" className='text-xl font-bold outline-0 mb-2 px-6' value={titleValue} onChange={(e) => setTitleValue(e.target.value)} />
-            <textarea className='flex-1 resize-none outline-0 px-6' value={contentValue} onChange={(e) => setContentValue(e.target.value)}></textarea>
+            <input name="title" type="text" className='text-xl font-bold outline-0 mb-2 px-6' value={titleValue} onChange={(e) => setTitleValue(e.target.value)} />
+            <textarea name="content" className='flex-1 resize-none outline-0 px-6' value={contentValue} onChange={(e) => setContentValue(e.target.value)}></textarea>
             {modified && (
                 <div className="flex items-center border-t">
                     <span className="flex-1 opacity-70 text-sm px-6">You have unsaved changes.</span>
