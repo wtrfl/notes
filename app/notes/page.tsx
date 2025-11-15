@@ -32,19 +32,25 @@ export default function Notes() {
 
     const [editorModified, setEditorModified] = useState<boolean>(false);
 
-    useEffect(() => {
-        const handleKey = (e: KeyboardEvent) => {
-            if (e.key === "Escape") {
-                setCurrentNoteId(null);
+    const handleKey = (e: KeyboardEvent) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (e.key === "Escape") {
+            if (editorModified) {
+                alert("You have unsaved changes!");
+                return;
             }
+            setCurrentNoteId(null);
         }
+    }
 
-        window.addEventListener("keydown", handleKey);
+    useEffect(() => {
+        window.addEventListener("keyup", handleKey);
 
         return () => {
-            window.removeEventListener("keydown", handleKey);
+            window.removeEventListener("keyup", handleKey);
         }
-    }, [])
+    }, [editorModified])
 
     useEffect(() => {
         currentNoteRef.current = currentNoteId;
