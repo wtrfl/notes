@@ -64,6 +64,8 @@ export default function Notes() {
             title: "Note",
             content: "test",
             createdAt: serverTimestamp()
+        }).then((noteRef) => {
+            setCurrentNoteId(noteRef.id);
         })
     }
 
