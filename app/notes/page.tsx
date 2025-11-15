@@ -102,16 +102,16 @@ export default function Notes() {
                 <span>NOTES</span>
                 <UserDropdown />
             </div>
-            <div className="flex flex-1 items-stretch">
-                <div className="flex flex-col w-75 border-r h-full">
+            <div className="flex flex-1 overflow-hidden">
+                <div className="flex flex-col w-75 border-r overflow-auto">
                     <button className="border-b flex px-3 py-3 items-center gap-2 cursor-pointer bg-foreground/(--bg-opacity) hover:[--bg-opacity:5%]" onClick={addNote}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                         New Note
                     </button>
                     {notes.map(note => (
                         <div onClick={() => handleSelectNote(note.id)} className={"border-b flex flex-col px-4 py-3 cursor-pointer bg-foreground/(--bg-opacity) " + (note.id === currentNoteId ? "[--bg-opacity:10%]" : "[--bg-opacity:0%] hover:[--bg-opacity:5%]")} key={note.id}>
-                            <strong>{note.title}</strong>
-                            <span>
+                            <strong className='line-clamp-1 text-ellipsis'>{note.title}</strong>
+                            <span className='line-clamp-1 text-ellipsis'>
                                 {formattedNoteDate(note.createdAt, "short")}
                                 <span className='opacity-75'> {note.content}</span>
                             </span>
