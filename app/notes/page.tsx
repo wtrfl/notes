@@ -3,8 +3,8 @@
 // TODO: markdown support, apple notes desktop style layout, updating and deleting notes
 
 import { auth, db } from '@/lib/firebase';
-import { addDoc, collection, getDocs, serverTimestamp, CollectionReference, Timestamp, onSnapshot } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { addDoc, collection, getDocs, serverTimestamp, CollectionReference, Timestamp, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { useEffect, useRef, useState } from 'react';
 import UserDropdown from './UserDropdown';
 import { onAuthStateChanged } from 'firebase/auth';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -27,8 +27,20 @@ export default function Notes() {
 
     const [currentNoteId, setCurrentNoteId] = useState<null | string>(null);
     const currentNote = notes ? notes.find(note => note.id === currentNoteId) : null;
+    const currentNoteRef = useRef<string | null>(null);
 
     const [editorModified, setEditorModified] = useState<boolean>(false);
+
+    useEffect(() => {
+        currentNoteRef.current = currentNoteId;
+        const params = new URLSearchParams(searchParams);
+        if (currentNoteId) {
+            params.set("note", currentNoteId);
+        } else {
+            params.delete("note");
+        }
+        router.replace(`${pathname}?${params.toString()}`)
+    }, [currentNoteId])
 
     useEffect(() => {
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -48,11 +60,11 @@ export default function Notes() {
     const addNote = async () => {
         const notesRef = collection(db, "users", user!.uid, "notes") as CollectionReference<Doc>;
 
-        await addDoc(notesRef, {
+        addDoc(notesRef, {
             title: "Note",
             content: "test",
             createdAt: serverTimestamp()
-        });
+        })
     }
 
     useEffect(() => {
@@ -65,10 +77,12 @@ export default function Notes() {
                 return;
             }
 
-            unsubscribeNotes = onSnapshot(collection(db, "users", user?.uid, "notes") as CollectionReference<Doc>, (snapshot) => {
+            unsubscribeNotes = onSnapshot(query(collection(db, "users", user?.uid, "notes") as CollectionReference<Doc>, orderBy("createdAt", "desc")), (snapshot) => {
                 const notes: Note[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
                 setNotes(notes);
-                if (searchParams.get("note") !== "" && searchParams.get("note") !== null) setCurrentNoteId(searchParams.get("note"));
+                if (currentNoteRef.current === null && searchParams.get("note") !== "" && searchParams.get("note") !== null) {
+                    setCurrentNoteId(searchParams.get("note"));
+                }
             })
         })
 
@@ -84,9 +98,6 @@ export default function Notes() {
             return;
         }
         setCurrentNoteId(id);
-        const params = new URLSearchParams(searchParams);
-        params.set("note", id);
-        router.replace(`${pathname}?${params.toString()}`)
     } 
 
     if (loading || notes === null) return (
