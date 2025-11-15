@@ -13,14 +13,16 @@ const shortDate = (date: Date) => (
 
 const longDate = (date: Date) => {
     const hours = date.getHours();
+    const minutes = date.getMinutes();
     const formattedHours =  hours > 12 ? hours-12 : hours;
+    const formattedMinutes = minutes < 10 ? "0"+minutes : minutes;
     const ampm = hours > 12 ? 'PM' : 'AM';
     return (
         monthNames[date.getMonth()] + " " +
         date.getDate() + ", " +
         date.getFullYear() + " at " +
         formattedHours + ":" +
-        date.getMinutes() + " " +
+        formattedMinutes + " " +
         ampm
     )
 }
